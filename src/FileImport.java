@@ -82,8 +82,10 @@ public class FileImport {
         search = search.replaceAll( "\"", "");
         System.out.println(search);
 
+        boolean parsable = checkIfParsable(input);
+
         switch(comd) {
-            case "filmsuche": printMovieSearch(search);
+            case "filmsuche": printMovieSearch(search, parsable);
         }
 
     }
@@ -97,56 +99,39 @@ public class FileImport {
         }
     }
 
-    private static void printMovieSearch(String input, boolean isInt) {
-        if (input.contains("\"")) {
-            input = input.replace("\"", "");
-        }
-        int id = 0;
-        boolean parsable = checkIfParsable(input);
-        if (parsable) {
-            id = Integer.parseInt(input);
-        }
+    private static void printMovieSearch(String input, boolean parsable) {
+        int id = -1, m = 0;
+        if(parsable) { id = Integer.parseInt(input); }
 
-
-        int m = 0;
         for (Movie movies : movies.values()) {
-            if (parsable) {
-                if (!(movies.id == id)) {
-                    continue;
-                }
-            } else {
-                if (!(movies.title.contains(input))) {
-                    continue;
-                }
+            if(movies.title.contains(input) || movies.id == id) {
+                System.out.println("Title: " + movies.title);
+                System.out.println("Description: " + movies.description);
+                System.out.println("Release Date: " + movies.release);
+                System.out.println("IMDb Rate: " + movies.imdbRate);
+                System.out.println("IMDb Vote: " + movies.imdbVote);
+                System.out.println("Genre: " + movies.genre);
+                System.out.println("Movie ID: " + movies.id);
+                m++;
             }
-
-            System.out.println("Title: " + movies.title);
-            System.out.println("Description: " + movies.description);
-            System.out.println("Release Date: " + movies.release);
-            System.out.println("IMDb Rate: " + movies.imdbRate);
-            System.out.println("IMDb Vote: " + movies.imdbVote);
-            System.out.println("Genre: " + movies.genre);
-            System.out.println("Movie ID: " + movies.id);
-            m++;
         }
         if (m == 0) {
             System.out.println("Error: No result found");
         }
     }
 
-    private static void printActorSearch(String input) {
-        if (input.contains("\"")) {
-            input = input.replace("\"", "");
-        }
-        int a = 0;
+    private static void printActorSearch(String input, boolean parsable) {
+        int id = -1, count = 0;
+        if(parsable) { id = Integer.parseInt(input); }
+
         for (Actor actors : actors.values()) {
-//            if (actors.name.contains(input) || actors.id.equals(input)) {
-//                System.out.println("Name: " + actors.name);
-//                System.out.println("Actor ID " + actors.id);
-//                a++;
-//            }
+            if (actors.name.contains(input) || actors.id == id) {
+               System.out.println("Name: " + actors.name);
+                System.out.println("Actor ID " + actors.id);
+               count++;
+            }
         }
-        if (a == 0) {
+        if (count == 0) {
             System.out.println("Error: No result found");
         }
     }
@@ -166,9 +151,9 @@ public class FileImport {
     private static void printMovieNetwork(String input) {
         System.out.println("Search: " + input);
         for (Movie movies : movies.values()) {
-//            if(movies.title.contains(input) ||  movies.id.equals(input)) {
-//                System.out.println(movies.title);
-//                System.out.println("Actors: " + movies.actors.toString().replace("[","").replace("]",""));
+            if(movies.title.contains(input) ||  movies.id.equals(input)) {
+               System.out.println(movies.title);
+               System.out.println("Actors: " + movies.actors.toString().replace("[","").replace("]",""));
 //                System.out.print("Movies: ");
 //                String separator = "";
 //                for (String movie : searchMovieNetwork(movies)) {
