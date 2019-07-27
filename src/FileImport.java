@@ -80,7 +80,7 @@ public class FileImport {
         System.out.println(comd);
         String search = input.substring(input.indexOf("=")+1);
         search = search.replaceAll( "\"", "");
-        System.out.println(search);
+
 
         switch(comd) {
             case "filmsuche": printMovieSearch(search);
