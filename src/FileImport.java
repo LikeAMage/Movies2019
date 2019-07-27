@@ -9,7 +9,7 @@ public class FileImport {
     static void importFile(String fileName) {
         File file = new File(fileName);
         if (!file.exists() && file.isDirectory()) {
-            System.out.println("Datei existiert nicht");
+            System.out.println("File does not exist");
             System.exit(0);
         }
         BufferedReader br = null;
@@ -77,7 +77,6 @@ public class FileImport {
 
     static void inputCheck(String input) {
         String comd = input.substring(2, input.indexOf("="));
-        System.out.println(comd);
         String search = input.substring(input.indexOf("=")+1);
         search = search.replaceAll( "\"", "");
 
@@ -85,7 +84,12 @@ public class FileImport {
         boolean parsable = checkIfParsable(input);
 
         switch(comd) {
-            case "filmsuche": printMovieSearch(search, parsable);
+            case "filmsuche": printMovieSearch(search, parsable); break;
+            case "schauspielersuche": printActorSearch(search, parsable); break;
+            case "filmnetzwerk": printMovieNetwork(search, parsable); break;
+            case "schauspielernetzwerk": printActorNetwork(search, parsable); break;
+            default:
+                System.out.println("No such command found."); return;
         }
 
     }
@@ -122,12 +126,14 @@ public class FileImport {
 
     private static void printActorSearch(String input, boolean parsable) {
         int id = -1, count = 0;
-        if(parsable) { id = Integer.parseInt(input); }
+        if(parsable) {
+            id = Integer.parseInt(input);
+        }
 
         for (Actor actors : actors.values()) {
             if (actors.name.contains(input) || actors.id == id) {
                System.out.println("Name: " + actors.name);
-                System.out.println("Actor ID " + actors.id);
+               System.out.println("Actor ID: " + actors.id);
                count++;
             }
         }
@@ -148,19 +154,23 @@ public class FileImport {
     }
 
 
-    private static void printMovieNetwork(String input) {
+    private static void printMovieNetwork(String input, boolean parsable) {
         System.out.println("Search: " + input);
+        int id = -1;
+        if(parsable) {
+            id = Integer.parseInt(input);
+        }
         for (Movie movies : movies.values()) {
-            if(movies.title.contains(input) ||  movies.id.equals(input)) {
+            if(movies.title.contains(input) ||  movies.id == id) {
                System.out.println(movies.title);
                System.out.println("Actors: " + movies.actors.toString().replace("[","").replace("]",""));
-//                System.out.print("Movies: ");
-//                String separator = "";
-//                for (String movie : searchMovieNetwork(movies)) {
-//                    System.out.print(separator + movie);
-//                    separator = ", ";
-//                }
-//            }
+               System.out.print("Movies: ");
+               String separator = "";
+               for (String movie : searchMovieNetwork(movies)) {
+                    System.out.print(separator + movies);
+                    separator = ", ";
+                }
+            }
         }
     }
 
@@ -175,18 +185,24 @@ public class FileImport {
         return actors;
     }
 
-    private static void printActorNetwork(String input) {
+    private static void printActorNetwork(String input, boolean parsable) {
         System.out.println("Search: " + input);
+        int id = -1;
+        if(parsable) {
+            id = Integer.parseInt(input);
+        }
+
         for (Actor actors : actors.values()) {
-//            if(actors.name.contains(input) || actors.id.equals(input)) {
-//                System.out.println(actors.name);
-//                System.out.println("Movies: " + actors.movies.toString().replace("[","").replace("]",""));
-//                System.out.print("Actors: ");
-//                String separator = "";
-//                for(String actor : searchActorNetwork(actors)) {
-//                    System.out.print(separator + actor);
-//                    separator = ", ";
-//                }
+            if(actors.name.contains(input) || actors.id == id) {
+                System.out.println(actors.name);
+                System.out.println("Movies: " + actors.movies.toString().replace("[","").replace("]",""));
+                System.out.print("Actors: ");
+                String separator = "";
+                for(String actor : searchActorNetwork(actors)) {
+                    System.out.print(separator + actor);
+                    separator = ", ";
+                }
+            }
         }
     }
 }
