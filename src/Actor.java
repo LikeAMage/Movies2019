@@ -7,9 +7,4 @@ public class Actor extends Human {
         this.id = id;
         this.name = name;
     }
-
-    @Override
-    public String toString(){
-        return name;
-    }
 }

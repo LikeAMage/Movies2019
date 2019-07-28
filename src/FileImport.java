@@ -2,6 +2,9 @@ import java.io.*;
 import java.util.*;
 
 public class FileImport {
+    /*
+    HashMaps for all Actors, Movies and Directors, so each value has an serialized key
+     */
     static Map<Integer, Actor> actors = new HashMap<>();
     static Map<Integer, Movie> movies = new HashMap<>();
     static Map<Integer, Director> directors = new HashMap<>();
@@ -25,6 +28,7 @@ public class FileImport {
                     row = br.readLine();
                 }
 
+                //Filling the Hash-Maps
                 result = row.split("\",\"");
                 result[0] = result[0].replaceFirst("\"", "");
                 int id = Integer.parseInt(result[0]);
@@ -39,7 +43,7 @@ public class FileImport {
                         break;
                     case 2:
                         result[6] = result[6].replace("\"", "");
-                        movies.put(id, new Movie(id, result[1], result[2], result[3], result[4], result[5], result[6]));
+                        movies.put(id, new Movie(id, result[1], result[2], result[4], result[6], result[5], result[3]));
                         break;
                     case 3:
                         result[1] = result[1].replace("\"", "");
@@ -76,24 +80,23 @@ public class FileImport {
     }
 
     static void inputCheck(String input) {
+        // Regex so format of Input is correct and can be used in Switch-Case
         String comd = input.substring(2, input.indexOf("="));
         String search = input.substring(input.indexOf("=")+1);
         search = search.replaceAll( "\"", "");
 
-
-        boolean parsable = checkIfParsable(input);
-
         switch(comd) {
-            case "filmsuche": printMovieSearch(search, parsable); break;
-            case "schauspielersuche": printActorSearch(search, parsable); break;
-            case "filmnetzwerk": printMovieNetwork(search, parsable); break;
-            case "schauspielernetzwerk": printActorNetwork(search, parsable); break;
+            case "filmsuche": printMovieSearch(search); break;
+            case "schauspielersuche": printActorSearch(search); break;
+            //case "filmnetzwerk": printMovieNetwork(search); break;
+            //case "schauspielernetzwerk": printActorNetwork(search); break;
             default:
                 System.out.println("No such command found."); return;
         }
 
     }
 
+    //check if input is parsable into an Integer
     private static boolean checkIfParsable(String input) {
         try {
             Integer.parseInt(input);
@@ -103,19 +106,22 @@ public class FileImport {
         }
     }
 
-    private static void printMovieSearch(String input, boolean parsable) {
+    private static void printMovieSearch(String input) {
         int id = -1, m = 0;
+        boolean parsable = checkIfParsable(input);
         if(parsable) { id = Integer.parseInt(input); }
 
+
         for (Movie movies : movies.values()) {
+            //first checks if it input is a string if it is not, will check if the id
             if(movies.title.contains(input) || movies.id == id) {
                 System.out.println("Title: " + movies.title);
                 System.out.println("Description: " + movies.description);
                 System.out.println("Release Date: " + movies.release);
                 System.out.println("IMDb Rate: " + movies.imdbRate);
-                System.out.println("IMDb Vote: " + movies.imdbVote);
+                System.out.println("IMDb Votes: " + movies.imdbVote);
                 System.out.println("Genre: " + movies.genre);
-                System.out.println("Movie ID: " + movies.id);
+                System.out.println("Movie ID: " + movies.id + "\n");
                 m++;
             }
         }
@@ -124,8 +130,9 @@ public class FileImport {
         }
     }
 
-    private static void printActorSearch(String input, boolean parsable) {
+    private static void printActorSearch(String input) {
         int id = -1, count = 0;
+        boolean parsable = checkIfParsable(input);
         if(parsable) {
             id = Integer.parseInt(input);
         }
@@ -133,76 +140,12 @@ public class FileImport {
         for (Actor actors : actors.values()) {
             if (actors.name.contains(input) || actors.id == id) {
                System.out.println("Name: " + actors.name);
-               System.out.println("Actor ID: " + actors.id);
+               System.out.println("Actor ID: " + actors.id + "\n");
                count++;
             }
         }
         if (count == 0) {
             System.out.println("Error: No result found");
-        }
-    }
-
-    static Set<String> searchMovieNetwork(Movie movies1) {
-        Set<String> movies = new HashSet<>();
-        for (Actor actors : movies1.actors) {
-            for (Movie movie : actors.movies) {
-                movies.add("'" + movie.title + "'");
-            }
-        }
-        movies.remove("'" + movies1.title + "'");
-        return movies;
-    }
-
-
-    private static void printMovieNetwork(String input, boolean parsable) {
-        System.out.println("Search: " + input);
-        int id = -1;
-        if(parsable) {
-            id = Integer.parseInt(input);
-        }
-        for (Movie movies : movies.values()) {
-            if(movies.title.contains(input) ||  movies.id == id) {
-               System.out.println(movies.title);
-               System.out.println("Actors: " + movies.actors.toString().replace("[","").replace("]",""));
-               System.out.print("Movies: ");
-               String separator = "";
-               for (String movie : searchMovieNetwork(movies)) {
-                    System.out.print(separator + movies);
-                    separator = ", ";
-                }
-            }
-        }
-    }
-
-    static Set<String> searchActorNetwork(Actor actors1) {
-        Set<String> actors = new HashSet<>();
-        for (Movie movies : actors1.movies) {
-            for (Actor actor : movies.actors) {
-                actors.add(actor.name);
-            }
-        }
-        actors.remove(actors1.name);
-        return actors;
-    }
-
-    private static void printActorNetwork(String input, boolean parsable) {
-        System.out.println("Search: " + input);
-        int id = -1;
-        if(parsable) {
-            id = Integer.parseInt(input);
-        }
-
-        for (Actor actors : actors.values()) {
-            if(actors.name.contains(input) || actors.id == id) {
-                System.out.println(actors.name);
-                System.out.println("Movies: " + actors.movies.toString().replace("[","").replace("]",""));
-                System.out.print("Actors: ");
-                String separator = "";
-                for(String actor : searchActorNetwork(actors)) {
-                    System.out.print(separator + actor);
-                    separator = ", ";
-                }
-            }
         }
     }
 }
